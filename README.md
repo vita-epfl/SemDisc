@@ -1,6 +1,6 @@
 # A Shared Representation for Photorealistic Driving Simulators
 
-Look at the original paper (https://arxiv.org/abs/2010.10270):
+The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", [ITS paper](https://ieeexplore.ieee.org/abstract/document/9635715), [arXiv](https://arxiv.org/abs/2108.10879)
 
 > __A Shared Representation for Photorealistic Driving Simulators__<br />
 > _[Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en)_, 2021.

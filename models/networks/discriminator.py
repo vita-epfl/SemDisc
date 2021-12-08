@@ -79,16 +79,16 @@ class NLayerDiscriminator(BaseNetwork):
         padw = int(np.ceil((kw - 1.0) / 2))
         nf = opt.ndf
         input_nc = self.compute_D_input_nc(opt)
-        if self.opt.semantic:
+        if self.opt.c2f:
             output_nc = 35+1
-        elif self.opt.semantic_disc:
+        elif self.opt.c2f_sem:
             output_nc = 35+1+19 #fine+coarse+semantics
             input_nc = 3 # we remove segmentation from the input of D
-        elif self.opt.self_supervised:
+        elif self.opt.c2f_sem_rec:
             output_nc = 35+1+19+3   # fine+coarse+semantics+the image back
             input_nc = 3 # we remove segmentation from the input of D
         elif self.opt.added_capacity:
-            output_nc=35
+            output_nc = 35
         else:
             output_nc = 1
 

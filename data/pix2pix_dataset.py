@@ -86,7 +86,7 @@ class Pix2pixDataset(BaseDataset):
             else self.opt.label_nc
         input_label = torch.FloatTensor(nc, h, w).zero_()
         label_tensor = input_label.scatter_(0, label_tensor.long(), 1.0)
-        if self.opt.semantic or self.opt.semantic_disc or self.opt.self_supervised:
+        if self.opt.c2f or self.opt.c2f_sem or self.opt.c2f_sem_rec:
             # create one-hot label for loss
             onnnnes = torch.FloatTensor(1, h, w).fill_(1)
             coarse_fine = torch.unsqueeze(torch.cat((label_tensor, onnnnes), dim = 0), 0)
@@ -110,7 +110,6 @@ class Pix2pixDataset(BaseDataset):
 
         tmp = ((label_map_segmentation == 0) + (label_map_segmentation == 1) + (label_map_segmentation == 2) + (label_map_segmentation == 3) + (label_map_segmentation == 4) + (label_map_segmentation == 5) + (label_map_segmentation == 6) + (label_map_segmentation == 9) + (label_map_segmentation == 10) \
                     + (label_map_segmentation == 14) + (label_map_segmentation == 15) + (label_map_segmentation == 16) + (label_map_segmentation == 18) + (label_map_segmentation == 29) + (label_map_segmentation == 30) + (label_map_segmentation == -1)).type(torch.bool)
-        #print(tmp)
         label_map_segmentation[tmp] = 255
 
         label_map_segmentation[label_map_segmentation==7]=0
@@ -132,10 +131,6 @@ class Pix2pixDataset(BaseDataset):
         label_map_segmentation[label_map_segmentation==31]=16
         label_map_segmentation[label_map_segmentation==32]=17
         label_map_segmentation[label_map_segmentation==33]=18
-
-        #label_map_segmentation[label_map_segmentation == 255] = self.opt.label_nc  # 'unknown' is opt.label_nc
-
-        #print(torch.min(label_tensor), torch.max(label_tensor))
 
         # input image (real images)
         image_path = self.image_paths[index]

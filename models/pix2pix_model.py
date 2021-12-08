@@ -24,25 +24,11 @@ class Pix2PixModel(torch.nn.Module):
             else torch.ByteTensor
 
         self.netG, self.netD, self.netE = self.initialize_networks(opt)
-        # init segmentation network
-        
-        if self.opt.fine_tune:
-            self.netS = networks.PSPNet()
-            for m in self.netS.modules():
-                if isinstance(m, torch.nn.BatchNorm2d):
-                    m.training = False
 
-            self.netS = torch.nn.DataParallel(self.netS).cuda()
-            print(self.netS)
-            state_dict = torch.load(self.opt.seg_model_dir)
-            self.netS.load_state_dict(state_dict['state_dict'], strict=False)
-            self.netS = self.netS.module
-            ## padding
-            self.m = torch.nn.ZeroPad2d((0, 1, 0, 1))
         # set loss functions
         if opt.isTrain:
             self.criterionGAN = networks.GANLoss(
-                opt.gan_mode, tensor=self.FloatTensor, opt=self.opt, wmse = (self.opt.self_supervised or self.opt.semantic or self.opt.semantic_disc))
+                opt.gan_mode, tensor=self.FloatTensor, opt=self.opt, wmse = (self.opt.c2f_sem_rec or self.opt.c2f or self.opt.c2f_sem))
             self.criterionFeat = torch.nn.L1Loss()
             self.criterionSeg = torch.nn.CrossEntropyLoss(ignore_index=255)
             self.upsample = torch.nn.Upsample(size=(int(self.opt.crop_size//self.opt.aspect_ratio), self.opt.crop_size), mode='bilinear')
@@ -60,13 +46,13 @@ class Pix2PixModel(torch.nn.Module):
     # routines based on |mode|.
     def forward(self, data, mode):
         #pdb.set_trace()
-        if self.opt.semantic:
+        if self.opt.c2f:
             self.smap = []
             input_semantics, real_image, smap35, smap19 = self.preprocess_input(data)
             self.smap.append(smap35)
             self.smap.append(smap19)
             label_mapS = None
-        elif self.opt.semantic_disc or self.opt.self_supervised:
+        elif self.opt.c2f_sem or self.opt.c2f_sem_rec:
             self.smap = []
             input_semantics, real_image, smap35, smap19, label_mapS = self.preprocess_input(data)
             self.smap.append(smap35)
@@ -165,48 +151,15 @@ class Pix2PixModel(torch.nn.Module):
         smap35 = data['smap35']
         smap19 = data['smap19']
 
-        '''# move to GPU and change data types
-        data['label'] = data['label'].long()
-        if self.use_gpu():
-            data['label'] = data['label'].cuda()
-            data['instance'] = data['instance'].cuda()
-            data['image'] = data['image'].cuda()
-
-        # create one-hot label map
-        label_map = data['label']
-        label_mapS = torch.squeeze(data['smapS'], dim=1)
-        bs, _, h, w = label_map.size()
-        nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
-            else self.opt.label_nc
-        input_label = self.FloatTensor(bs, nc, h, w).zero_()
-        input_semantics = input_label.scatter_(1, label_map, 1.0)
-#         print('label',input_semantics.shape)
-        if self.opt.semantic or self.opt.semantic_disc:
-             # create one-hot label for loss
-            smap35 = data['smap35'].long()
-            bs, _, h, w = smap35.size()
-            nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
-                else self.opt.label_nc
-            input_label = self.FloatTensor(bs, nc, h, w).zero_()
-            smap35 = input_label.scatter_(1, smap35, 1.0)
-#             print('smap35',smap35.shape)
-            smap19 = data['smap19'].long()
-            bs, _, h, w = smap19.size()
-            nc = self.opt.label_nc + 1 if self.opt.contain_dontcare_label \
-                else self.opt.label_nc
-            input_label = self.FloatTensor(bs, nc, h, w).zero_()
-            smap19 = input_label.scatter_(1, smap19, 1.0)
-#             print('smap19',smap19.shape)'''
-
         # concatenate instance map if it exists
         if not self.opt.no_instance:
             inst_map = data['instance']
             instance_edge_map = self.get_edges(inst_map)
             input_semantics = torch.cat((input_semantics, instance_edge_map), dim=1)
             
-        if self.opt.semantic:
+        if self.opt.c2f:
             return input_semantics, data['image'], smap35, smap19
-        elif self.opt.semantic_disc or self.opt.self_supervised:
+        elif self.opt.c2f_sem or self.opt.c2f_sem_rec:
             return input_semantics, data['image'], smap35, smap19, label_mapS
         else:
             return input_semantics, data['image']
@@ -232,10 +185,10 @@ class Pix2PixModel(torch.nn.Module):
             G_losses['KLD'] = KLD_loss
 
         #pdb.set_trace()
-        if self.opt.semantic_disc:
+        if self.opt.c2f_sem:
             pred_fake, pred_real, pred_fakeS, pred_realS = self.discriminate(
                 input_semantics, fake_image, real_image)
-        elif self.opt.self_supervised:
+        elif self.opt.c2f_sem_rec:
             pred_fake, pred_real, pred_fakeS, pred_realS, pred_fakeSelf, pred_realSelf = self.discriminate(
                 input_semantics, fake_image, real_image)
         else:
@@ -245,32 +198,32 @@ class Pix2PixModel(torch.nn.Module):
         G_losses['GAN'] = self.criterionGAN(pred_fake, True,self.smap,
                                             for_discriminator=False) * self.opt.lambda_GAN
 
-        #segmentation part (including self-supervised and semantic-segmentation losses)
-        if self.opt.semantic_disc:
+        # Segmentation part (including self-supervised and semantic-segmentation losses)
+        if self.opt.c2f_sem:
             if type(pred_fakeS) == list:
                 G_losses['Seg'] = 0.0
                 for seg in pred_fakeS: # different discriminators for different scales
                     seg = self.upsample(seg)
-                    G_losses['Seg'] = G_losses['Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_S * (0.0+self.opt.active_GSeg)
+                    G_losses['Seg'] = G_losses['Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_seg * (0.0+self.opt.active_GSeg)
             else:
                 pred_fakeS = self.upsample(pred_fakeS)
-                G_losses['Seg'] = self.criterionSeg(pred_fakeS, label_mapS) * self.opt.lambda_S * (self.opt.active_GSeg)
-        elif self.opt.self_supervised:
+                G_losses['Seg'] = self.criterionSeg(pred_fakeS, label_mapS) * self.opt.lambda_seg * (self.opt.active_GSeg)
+        elif self.opt.c2f_sem_rec:
             if type(pred_fakeS) == list:
                 G_losses['Seg'] = 0.0
                 for seg in pred_fakeSelf: # different discriminators for different scales
                     seg = self.upsample(seg)
-                    G_losses['Seg'] = G_losses['Seg'] + self.criterionFeat(seg, real_image) * self.opt.lambda_Self * (0.0+self.opt.active_GSeg)
+                    G_losses['Seg'] = G_losses['Seg'] + self.criterionFeat(seg, real_image) * self.opt.lambda_rec * (0.0+self.opt.active_GSeg)
                 for seg in pred_fakeS: # different discriminators for different scales
                     seg = self.upsample(seg)
-                    G_losses['Seg'] = G_losses['Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_S * (0.0+self.opt.active_GSeg)
+                    G_losses['Seg'] = G_losses['Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_seg * (0.0+self.opt.active_GSeg)
             else:
                 pred_fakeS = self.upsample(pred_fakeS)
-                G_losses['Seg'] = self.criterionSeg(pred_fakeS, label_mapS) * self.opt.lambda_S * (self.opt.active_GSeg)
+                G_losses['Seg'] = self.criterionSeg(pred_fakeS, label_mapS) * self.opt.lambda_seg * (self.opt.active_GSeg)
         elif fine_tune:
             self.real_cf = self.netS(self.m(real_image))
             self.fake_cf = self.netS(self.m(fake_image))
-            G_losses['Seg'] = self.criterionFeat(self.real_cf,self.fake_cf) * self.opt.lambda_S
+            G_losses['Seg'] = self.criterionFeat(self.real_cf,self.fake_cf) * self.opt.lambda_seg
             
         if not self.opt.no_ganFeat_loss:
             num_D = len(pred_fake)
@@ -300,40 +253,35 @@ class Pix2PixModel(torch.nn.Module):
             fake_image = fake_image.detach()
             fake_image.requires_grad_()
 
-        if self.opt.self_supervised:
+        if self.opt.c2f_sem_rec:
             pred_fake, pred_real, pred_fakeS, pred_realS, pred_fakeSelf, pred_realSelf = self.discriminate(
                 input_semantics, fake_image, real_image)
             if type(pred_realS) == list:
                 D_losses['D_Seg'] = 0
                 for seg in pred_realSelf: # different discriminators for different scales
                     seg = self.upsample(seg)
-                    D_losses['D_Seg'] = D_losses['D_Seg'] + self.criterionFeat(seg, real_image) * self.opt.lambda_Self
+                    D_losses['D_Seg'] = D_losses['D_Seg'] + self.criterionFeat(seg, real_image) * self.opt.lambda_rec
                 for seg in pred_realS: # different discriminators for different scales
                     seg = self.upsample(seg)
-                    D_losses['D_Seg'] = D_losses['D_Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_S
+                    D_losses['D_Seg'] = D_losses['D_Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_seg
             else:
                 pred_realS = self.upsample(pred_realS)
-                D_losses['D_Seg'] = self.criterionFeat(pred_realS, real_image) * self.opt.lambda_S
-        elif self.opt.semantic_disc:
+                D_losses['D_Seg'] = self.criterionFeat(pred_realS, real_image) * self.opt.lambda_seg
+        elif self.opt.c2f_sem:
             pred_fake, pred_real, pred_fakeS, pred_realS = self.discriminate(
                 input_semantics, fake_image, real_image)
             if type(pred_realS) == list:
                 D_losses['D_Seg'] = 0
                 for seg in pred_realS: # different discriminators for different scales
                     seg = self.upsample(seg)
-                    D_losses['D_Seg'] = D_losses['D_Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_S
+                    D_losses['D_Seg'] = D_losses['D_Seg'] + self.criterionSeg(seg, label_mapS) * self.opt.lambda_seg
             else:
                 pred_realS = self.upsample(pred_realS)
-                D_losses['D_Seg'] = self.criterionFeat(pred_realS, real_image) * self.opt.lambda_S
+                D_losses['D_Seg'] = self.criterionFeat(pred_realS, real_image) * self.opt.lambda_seg
         else:
             pred_fake, pred_real = self.discriminate(
                 input_semantics, fake_image, real_image)
 
-
-#         print('pred_fake',len(pred_fake))
-#         print('pred_fake_1', len(pred_fake[-1]))
-#         print('shape',pred_fake[0][-1].shape)
-#         print('shape',pred_fake[0][-4].shape)
         
         D_losses['D_fake'] = self.criterionGAN(pred_fake, False,self.smap,
                                                for_discriminator=True) * self.opt.lambda_GAN
@@ -365,11 +313,7 @@ class Pix2PixModel(torch.nn.Module):
         else:
             fake_image = self.netG(input_semantics, z=z)
             if self.opt.D_output:
-                '''pred_real = self.netD(torch.cat((self.real_A, self.real_B), 1)).cpu().numpy()
-                pred_fake = self.netD(torch.cat((self.real_A, self.fake_B), 1).detach()).cpu().numpy()'''
                 pred_fake, pred_real, pred_fakeS, pred_realS = self.discriminate(input_semantics, fake_image.detach(), real_image)
-                print(self.image_paths[0])
-                print(self.image_paths[0].split('/')[-1])
                 np.save('vis/real0_'+self.image_paths[0].split('/')[-1], pred_real[0][-1].cpu().numpy())
                 np.save('vis/fake0_'+self.image_paths[0].split('/')[-1], pred_fake[0][-1].cpu().numpy())
                 np.save('vis/real1_'+self.image_paths[0].split('/')[-1], pred_real[1][-1].cpu().numpy())
@@ -385,7 +329,7 @@ class Pix2PixModel(torch.nn.Module):
     # for each fake and real image.
 
     def discriminate(self, input_semantics, fake_image, real_image):
-        if self.opt.semantic_disc or self.opt.self_supervised:
+        if self.opt.c2f_sem or self.opt.c2f_sem_rec:
             fake_concat = fake_image
             real_concat = real_image
         else:
@@ -400,18 +344,18 @@ class Pix2PixModel(torch.nn.Module):
 
         discriminator_out = self.netD(fake_and_real)
 
-        if self.opt.semantic_disc:
+        if self.opt.c2f_sem:
             pred_fake, pred_real, pred_fakeS, pred_realS = self.divide_pred_seg(discriminator_out)
             return pred_fake, pred_real, pred_fakeS, pred_realS
-        elif self.opt.self_supervised:
-            pred_fake, pred_real, pred_fakeS, pred_realS, pred_fakeSelf, pred_realSelf = self.divide_pred_seg_self(discriminator_out)
+        elif self.opt.c2f_sem_rec:
+            pred_fake, pred_real, pred_fakeS, pred_realS, pred_fakeSelf, pred_realSelf = self.divide_pred_seg_rec(discriminator_out)
             return pred_fake, pred_real, pred_fakeS, pred_realS, pred_fakeSelf, pred_realSelf
         else:
             pred_fake, pred_real = self.divide_pred(discriminator_out)
             return pred_fake, pred_real
 
     # Considering both segmentation and discriminator concatenated
-    def divide_pred_seg_self(self, pred):
+    def divide_pred_seg_rec(self, pred):
         # the prediction contains the intermediate outputs of multiscale GAN,
         # so it's usually a list
         if type(pred) == list:

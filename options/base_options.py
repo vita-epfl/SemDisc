@@ -28,7 +28,7 @@ class BaseOptions():
         parser.add_argument('--norm_G', type=str, default='spectralinstance', help='instance normalization or batch normalization')
         parser.add_argument('--norm_D', type=str, default='spectralinstance', help='instance normalization or batch normalization')
         parser.add_argument('--norm_E', type=str, default='spectralinstance', help='instance normalization or batch normalization')
-        parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
+        parser.add_argument("--phase", type=str, default='train', help='train, val, test, etc')
 
         # input/output sizes
         parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
@@ -55,7 +55,7 @@ class BaseOptions():
         parser.add_argument('--display_winsize', type=int, default=400, help='display window size')
 
         # for generator
-        parser.add_argument('--netG', type=str, default='spade', help='selects model to use for netG (pix2pixhd | spade | ASAPNets)')
+        parser.add_argument('--netG', type=str, default='spade', help='selects model to use for netG (pix2pixhd | spade | asapnets)')
         parser.add_argument('--ngf', type=int, default=64, help='# of gen filters in first conv layer')
         parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
         parser.add_argument('--init_variance', type=float, default=0.02, help='variance of the initialization distribution')
@@ -67,21 +67,21 @@ class BaseOptions():
 
         parser.add_argument('--nef', type=int, default=16, help='# of encoder filters in the first conv layer')
         parser.add_argument('--use_vae', action='store_true', help='enable training with an image encoder.')
-        parser.add_argument('--semantic', action='store_true', help='training with semantic aware D (c2f)')
-        parser.add_argument('--semantic_disc', action='store_true', help='combining semantic aware D (c2f) and S (Seg)')
-        #parser.add_argument('--semantic_disc_noc2f', action='store_true', help='simple D and S (Seg)')
-        parser.add_argument('--added_capacity', action='store_true', help='add 10% capacity to D')
-        parser.add_argument('--self_supervised', action='store_true', help='combining semantic aware D (c2f), S (Seg) and self-supervised task (Self)')
-        #parser.add_argument('--self_supervised_noc2f', action='store_true', help='simple D and S (Seg) and self-supervised(Self)')
+        parser.add_argument('--c2f', action='store_true', help='training with D having \
+                            coarse-to-fine-grained adversarial (c2f) head')
+        parser.add_argument('--c2f_sem', action='store_true', help='training with D having \
+                            coarse-to-fine-grained adversarial (c2f) and segmentation (sem) heads')
+        parser.add_argument('--c2f_sem_rec', action='store_true', help='training with D having \
+                            coarse-to-fine-grained adversarial (c2f) and segmentation (sem) and reconstruction heads (rec) heads')
+        parser.add_argument('--added_capacity', action='store_true', help='add 10% capacity to D used for ablation studies')
         parser.add_argument('--active_GSeg', action='store_true', help='whether the segmentation guidance is active for G')
         parser.add_argument('--fine_tune', action='store_true', help='wheter fine_tune the model, usually with continue train')
         parser.add_argument('--lambda_GAN', type=float, default=1.0, help='# weight of gan loss')
-        parser.add_argument('--lambda_S', type=float, default=1.0, help='# weight of segmentation loss')
-        parser.add_argument('--seg_model_dir', type=str, default='./models/train_epoch_200.pth', help='segmentation model should be put here')
+        parser.add_argument('--lambda_seg', type=float, default=1.0, help='# weight of segmentation loss')
+        parser.add_argument('--lambda_rec', type=float, default=1.0, help='# weight of self autoencoder loss')
         parser.add_argument('--normalize_smaps', action='store_true', help='whether normalize smaps')
         parser.add_argument('--fine_grained_scale', type=float, default=1.0, help='the default is 1.0')
         parser.add_argument('--D_output', action='store_true', help='whether we save D outputs')
-        parser.add_argument('--lambda_Self', type=float, default=1.0, help='# weight of self autoencoder loss')
 
         # ASAPNets parameters
         parser.add_argument('--learned_ds', action='store_true', help='model learns the downsampling')

@@ -1,6 +1,6 @@
 # A Shared Representation for Photorealistic Driving Simulators
 
-The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", [ITS paper](https://ieeexplore.ieee.org/abstract/document/9635715), [arXiv](https://arxiv.org/abs/2108.10879)
+The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", [paper](https://ieeexplore.ieee.org/abstract/document/9635715), [arXiv](https://arxiv.org/abs/2108.10879)
 
 > __A Shared Representation for Photorealistic Driving Simulators__<br />
 > _[Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en)_, 2021.
@@ -56,35 +56,30 @@ leftImg8bit contains the dashcam photographs
 
 After preparing all necessary environments and the dataset. We can start to train the network by entering:
 
-### Training the semantic-aware discriminator
-
+### Training the generators with the semantic-aware discriminator
 ```
-python train.py --name cityscapes_semanticD --dataset_mode cityscapes --dataroot /PATH TO your data folder/ --load_size 256 --crop_size 256  --gpu_ids 0 --tf_log --batchSize 16 --niter 100 --niter_decay 100 --semantic --gan_mode ls
+bash train-run.sh
 ```
-### Training the original multiscale discriminator
-
+### Training the generators with original discriminator
 ```
-python train.py --name cityscapes --dataset_mode cityscapes --dataroot /PATH TO your data folder/ --load_size 256 --crop_size 256  --gpu_ids 0 --tf_log --batchSize 16 --niter 100 --niter_decay 100 
-```
-Then, please put the model under folder 'models'.
-
-When the main training process finishes, you need to restart your training with segmentation enabled.
-```
-python train.py --name cityscapes --dataset_mode cityscapes --dataroot /PATH TO your data folder/ --load_size 256 --crop_size 256  --gpu_ids 0 --tf_log --batchSize 16 --niter 100 --niter_decay 100 --fine_tune --continue_train --semantic --gan_mode ls
+bash train-run-orig.sh
 ```
 
-### Running the tests
 
-After you have full trained the network, you can run the test as following:
+### Tests
 
+After you have full trained the network, you can run the test as follows to get the outputs and FID scores:
 ```
-python test.py --name cityscapes_semanticD --dataset_mode cityscapes --dataroot /PATH TO your data folder/ --load_size 256 --crop_size 256  --gpu_ids 0
+bash test-run.sh
 ```
-## The code structure
+For achieving the segmentation scores, you need to follow [drn](https://github.com/fyu/drn) repo steps and then the following:
+```
+bash segmentation.sh
+```
+
+## Thanks
 
 The base of the code is borrowed from SPADE. Please refer to [SPADE](https://github.com/NVlabs/SPADE) to see the details.
-
-We adapt the 'pix2pix_model.py',  'cityscape_dataset.py' and 'loss.py' to add semantic-aware discriminator.
 
 
 

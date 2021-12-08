@@ -91,10 +91,10 @@ We adapt the 'pix2pix_model.py',  'cityscape_dataset.py' and 'loss.py' to add se
 ## Citation
 
 ```
-@inproceedings{saadatnejad2021semdisc,
-  title={A Shared Representation for Photorealistic Driving Simulators},
+@article{saadatnejad2021semdisc,
   author={Saadatnejad, Saeed and Li, Siyuan and Mordan, Taylor and Alahi, Alexandre},
-  booktitle={arXiv preprint arXiv:2010.10270},
-  year={2021}
-}
+  journal={IEEE Transactions on Intelligent Transportation Systems}, 
+  title={A Shared Representation for Photorealistic Driving Simulators}, 
+  year={2021},
+  doi={10.1109/TITS.2021.3131303}}
 ```

@@ -57,7 +57,7 @@ them.
 
 After preparing all necessary environments and the dataset, activate your environment and start to train the network.
 
-### Training the generators with the semantic-aware discriminator
+### Training with the semantic-aware discriminator
 
 The training is doen in two steps. First, the network is trained without only the adversarial head of D:
 
@@ -81,7 +81,7 @@ python train.py --name spade_semdisc --dataset_mode cityscapes --netG spade --c2
 
 You can change netG to different options [spade, asapnets, pix2pixhd].
 
-### Training the generators with original discriminator
+### Training with original discriminator
 
 The original model can be trained with the following command for comparison.
 
@@ -92,6 +92,8 @@ python train.py --name spade_orig --dataset_mode cityscapes --netG spade \
 ```
 
 Similarly, you can change netG to different options [spade, asapnets, pix2pixhd].
+
+For now, only training on GPU is supported. In case of lack of space, try decreasing the batch size.
 
 ## Test
 

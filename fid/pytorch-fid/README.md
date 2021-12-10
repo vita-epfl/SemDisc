@@ -59,6 +59,22 @@ features. The choices are:
 - 768:  pre-aux classifier features
 - 2048: final average pooling features (this is the default)
 
+
+## Citing
+
+If you use this repository in your research, consider citing it using the following Bibtex entry:
+
+```
+@misc{Seitzer2020FID,
+  author={Maximilian Seitzer},
+  title={{pytorch-fid: FID Score for PyTorch}},
+  month={August},
+  year={2020},
+  note={Version 0.2.1},
+  howpublished={\url{https://github.com/mseitzer/pytorch-fid}},
+}
+```
+
 ## License
 
 This implementation is licensed under the Apache License 2.0.

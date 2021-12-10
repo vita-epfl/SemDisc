@@ -95,9 +95,9 @@ Similarly, you can change netG to different options [spade, asapnets, pix2pixhd]
 
 ## Test
 
-### Tests - images and fid
+### Tests - image synthesis
 
-After you have the trained networks, run the test as follows to get the synthesized images and FID scores for both
+After you have the trained networks, run the test as follows to get the synthesized images for both
 original and semdisc models
 
 ```
@@ -107,8 +107,9 @@ python test.py --name $name --dataset_mode cityscapes \
 --netG spade --how_many 496
 ```
 
-And for computing FID scores:
-
+### Tests - FID
+For reporting FID scores, we leveraged [fid-pytorch](https://github.com/mseitzer/pytorch-fid).
+To compute the score between two sets:
 ```
 python fid/pytorch-fid/fid_score.py <GT_image path> <synthesized_image path> >> results/fid_$name.txt
 ```

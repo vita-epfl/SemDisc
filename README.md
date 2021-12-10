@@ -99,8 +99,8 @@ For now, only training on GPU is supported. In case of lack of space, try decrea
 
 ### Tests - image synthesis
 
-After you have the trained networks, run the test as follows to get the synthesized images for both
-original and semdisc models
+After you have the trained networks, run the test as follows to get the synthesized images for both original and semdisc
+models
 
 ```
 python test.py --name $name --dataset_mode cityscapes \
@@ -110,8 +110,10 @@ python test.py --name $name --dataset_mode cityscapes \
 ```
 
 ### Tests - FID
-For reporting FID scores, we leveraged [fid-pytorch](https://github.com/mseitzer/pytorch-fid).
-To compute the score between two sets:
+
+For reporting FID scores, we leveraged [fid-pytorch](https://github.com/mseitzer/pytorch-fid). To compute the score
+between two sets:
+
 ```
 python fid/pytorch-fid/fid_score.py <GT_image path> <synthesized_image path> >> results/fid_$name.txt
 ```

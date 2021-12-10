@@ -59,7 +59,6 @@ features. The choices are:
 - 768:  pre-aux classifier features
 - 2048: final average pooling features (this is the default)
 
-
 ## Citing
 
 If you use this repository in your research, consider citing it using the following Bibtex entry:

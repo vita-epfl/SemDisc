@@ -14,7 +14,7 @@ source ../ven*/bin/activate
 
 # You can change G to different options --netG spade, --netG asapnets, --netG pix2pixhd
 
-name='spade' # or spade_orig
+name='spade_semdisc' # or spade_orig
 python test.py --name $name --dataset_mode cityscapes \
 --checkpoints_dir /scratch/izar/saeedsa/spade/checkpoints \
 --dataroot /scratch/izar/saeedsa/pix2pixHD/datasets/cityscape \

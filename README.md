@@ -85,9 +85,9 @@ Similarly, you can change netG to different options [spade, asapnets, pix2pixhd]
 
 ### Tests - images and fid
 
-After you have full trained the network, you can run the test as follows to get the synthesized images and FID scores:
+After you have the trained networks, run the test as follows to get the synthesized images and FID scores for both original and semdisc models
 ```
-name='tmp2' # or spade_orig
+name='spade_semdisc' # or spade_orig
 python test.py --name $name --dataset_mode cityscapes \
 --checkpoints_dir <checkpoints path> --dataroot <data path> --results_dir ./results/ \
 --which_epoch latest --aspect_ratio 1 --load_size 256 --crop_size 256 \
@@ -130,13 +130,12 @@ python3 segment.py test -d ../ -c 19 --arch drn_d_105 --pretrained ../drn-d-105_
 cd ..
 ```
 
-## Thanks
+## Acknowledgments
 
 The base of the code is borrowed from SPADE. Please refer to [SPADE](https://github.com/NVlabs/SPADE) to see the details.
 
 
-
-## Citation
+### Citation
 
 ```
 @article{saadatnejad2021semdisc,
@@ -144,5 +143,6 @@ The base of the code is borrowed from SPADE. Please refer to [SPADE](https://git
   journal={IEEE Transactions on Intelligent Transportation Systems}, 
   title={A Shared Representation for Photorealistic Driving Simulators}, 
   year={2021},
-  doi={10.1109/TITS.2021.3131303}}
+  doi={10.1109/TITS.2021.3131303}
+}
 ```

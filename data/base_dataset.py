@@ -3,11 +3,12 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-import torch.utils.data as data
-from PIL import Image
-import torchvision.transforms as transforms
-import numpy as np
 import random
+
+import numpy as np
+import torch.utils.data as data
+import torchvision.transforms as transforms
+from PIL import Image
 
 
 class BaseDataset(data.Dataset):

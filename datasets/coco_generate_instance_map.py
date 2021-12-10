@@ -3,11 +3,12 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-import os
 import argparse
-from pycocotools.coco import COCO
+import os
+
 import numpy as np
 import skimage.io as io
+from pycocotools.coco import COCO
 from skimage.draw import polygon
 
 parser = argparse.ArgumentParser()
@@ -26,7 +27,6 @@ print("output dir at {}".format(opt.output_instance_dir))
 
 # initialize COCO api for instance annotations
 coco = COCO(opt.annotation_file)
-
 
 # display COCO categories and supercategories
 cats = coco.loadCats(coco.getCatIds())

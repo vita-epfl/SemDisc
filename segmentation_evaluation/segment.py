@@ -6,27 +6,22 @@ import json
 import logging
 import math
 import os
-from os.path import exists, join, split
+import shutil
+import sys
 import threading
-
 import time
+from os.path import exists, join, split
 
 import numpy as np
-import shutil
-
-import sys
-from PIL import Image
 import torch
-from torch import nn
 import torch.backends.cudnn as cudnn
-import torch.optim as optim
-from torchvision import datasets, transforms
+from PIL import Image
+from torch import nn
 from torch.autograd import Variable
+from torchvision import transforms
 
-import drn
 import data_transforms as transforms
-
-import pdb
+import drn
 
 try:
     from modules import batchnormsync
@@ -37,7 +32,6 @@ FORMAT = "[%(asctime)-15s %(filename)s:%(lineno)d %(funcName)s] %(message)s"
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
 
 CITYSCAPE_PALETTE = np.asarray([
     [128, 64, 128],
@@ -60,7 +54,6 @@ CITYSCAPE_PALETTE = np.asarray([
     [0, 0, 230],
     [119, 11, 32],
     [0, 0, 0]], dtype=np.uint8)
-
 
 TRIPLET_PALETTE = np.asarray([
     [0, 0, 0, 255],
@@ -246,6 +239,7 @@ def validate(val_loader, model, criterion, eval_score=None, print_freq=10):
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
+
     def __init__(self):
         self.reset()
 
@@ -476,17 +470,17 @@ def save_output_images(predictions, filenames, output_dir):
 
 
 def save_colorful_images(predictions, filenames, output_dir, palettes):
-   """
-   Saves a given (B x C x H x W) into an image file.
-   If given a mini-batch tensor, will save the tensor as a grid of images.
-   """
-   for ind in range(len(filenames)):
-       im = Image.fromarray(palettes[predictions[ind].squeeze()])
-       fn = os.path.join(output_dir, filenames[ind][:-4] + '.png')
-       out_dir = split(fn)[0]
-       if not exists(out_dir):
-           os.makedirs(out_dir)
-       im.save(fn)
+    """
+    Saves a given (B x C x H x W) into an image file.
+    If given a mini-batch tensor, will save the tensor as a grid of images.
+    """
+    for ind in range(len(filenames)):
+        im = Image.fromarray(palettes[predictions[ind].squeeze()])
+        fn = os.path.join(output_dir, filenames[ind][:-4] + '.png')
+        out_dir = split(fn)[0]
+        if not exists(out_dir):
+            os.makedirs(out_dir)
+        im.save(fn)
 
 
 def test(eval_data_loader, model, num_classes,
@@ -520,10 +514,10 @@ def test(eval_data_loader, model, num_classes,
                     'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
                     .format(iter, len(eval_data_loader), batch_time=batch_time,
                             data_time=data_time))
-    if has_gt: #val
+    if has_gt:  # val
         ious = per_class_iu(hist) * 100
-        pix_acc = 100*np.diag(hist).sum() / hist.sum()
-        class_acc = 100*np.diag(hist) / hist.sum(1)
+        pix_acc = 100 * np.diag(hist).sum() / hist.sum()
+        class_acc = 100 * np.diag(hist) / hist.sum(1)
         logger.info(' '.join('{:.03f}'.format(i) for i in ious))
         return round(np.nanmean(ious), 2), pix_acc, class_acc
 
@@ -608,10 +602,10 @@ def test_ms(eval_data_loader, model, num_classes, scales,
                     'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
                     .format(iter, len(eval_data_loader), batch_time=batch_time,
                             data_time=data_time))'''
-    if has_gt: #val
+    if has_gt:  # val
         ious = per_class_iu(hist) * 100
-        pix_acc = 100*np.diag(hist).sum() / hist.sum()
-        class_acc = 100*np.diag(hist) / hist.sum(1)
+        pix_acc = 100 * np.diag(hist).sum() / hist.sum()
+        class_acc = 100 * np.diag(hist) / hist.sum(1)
         logger.info(' '.join('{:.03f}'.format(i) for i in ious))
         return round(np.nanmean(ious), 2), pix_acc, class_acc
 
@@ -662,7 +656,7 @@ def test_seg(args):
             best_prec1 = checkpoint['best_prec1']
             model.load_state_dict(checkpoint['state_dict'])
             logger.info("=> loaded checkpoint '{}' (epoch {})"
-                  .format(args.resume, checkpoint['epoch']))
+                        .format(args.resume, checkpoint['epoch']))
         else:
             logger.info("=> no checkpoint found at '{}'".format(args.resume))
 
@@ -673,15 +667,15 @@ def test_seg(args):
         out_dir += '_ms'
 
     if args.ms:
-        mAP,pAcc,cAcc = test_ms(test_loader, model, args.classes, save_vis=True,
-                      has_gt=phase != 'test' or args.with_gt,
-                      output_dir=out_dir,
-                      scales=scales)
+        mAP, pAcc, cAcc = test_ms(test_loader, model, args.classes, save_vis=True,
+                                  has_gt=phase != 'test' or args.with_gt,
+                                  output_dir=out_dir,
+                                  scales=scales)
     else:
-        mAP,pAcc,cAcc = test(test_loader, model, args.classes, save_vis=True,
-                   has_gt=phase != 'test' or args.with_gt, output_dir=out_dir)
-    logger.info('mAP: %f, pAcc: %f, cAcc: %f', mAP,pAcc,np.nanmean(cAcc))
-    print('mAP: %.2f, pAcc: %.2f, cAcc: %.2f' %(mAP,pAcc,np.nanmean(cAcc)))
+        mAP, pAcc, cAcc = test(test_loader, model, args.classes, save_vis=True,
+                               has_gt=phase != 'test' or args.with_gt, output_dir=out_dir)
+    logger.info('mAP: %f, pAcc: %f, cAcc: %f', mAP, pAcc, np.nanmean(cAcc))
+    print('mAP: %.2f, pAcc: %.2f, cAcc: %.2f' % (mAP, pAcc, np.nanmean(cAcc)))
 
 
 def parse_args():

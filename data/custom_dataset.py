@@ -3,8 +3,8 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-from data.pix2pix_dataset import Pix2pixDataset
 from data.image_folder import make_dataset
+from data.pix2pix_dataset import Pix2pixDataset
 
 
 class CustomDataset(Pix2pixDataset):

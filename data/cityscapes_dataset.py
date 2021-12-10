@@ -4,8 +4,9 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 """
 
 import os.path
-from data.pix2pix_dataset import Pix2pixDataset
+
 from data.image_folder import make_dataset
+from data.pix2pix_dataset import Pix2pixDataset
 
 
 class CityscapesDataset(Pix2pixDataset):
@@ -48,4 +49,4 @@ class CityscapesDataset(Pix2pixDataset):
         name2 = os.path.basename(path2)
         # compare the first 3 components, [city]_[id1]_[id2]
         return '_'.join(name1.split('_')[:3]) == \
-            '_'.join(name2.split('_')[:3])
+               '_'.join(name2.split('_')[:3])

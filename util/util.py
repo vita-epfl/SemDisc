@@ -3,17 +3,17 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-import re
-import importlib
-import torch
-from argparse import Namespace
-import numpy as np
-from PIL import Image
-import os
 import argparse
+import importlib
+import os
+import re
+
 import dill as pickle
+import numpy as np
+import torch
+from PIL import Image
+
 import util.coco
-import pdb
 
 
 def save_obj(obj, name):
@@ -24,6 +24,7 @@ def save_obj(obj, name):
 def load_obj(name):
     with open(name, 'rb') as f:
         return pickle.load(f)
+
 
 # returns a configuration for creating a generator
 # |default_opt| should be the opt of the current experiment
@@ -187,7 +188,8 @@ def find_class_in_module(target_cls_name, module):
             cls = clsobj
 
     if cls is None:
-        print("In %s, there should be a class whose name matches %s in lowercase without underscore(_)" % (module, target_cls_name))
+        print("In %s, there should be a class whose name matches %s in lowercase without underscore(_)" % (
+            module, target_cls_name))
         exit(0)
 
     return cls
@@ -220,36 +222,38 @@ def uint82bin(n, count=8):
     return ''.join([str((n >> y) & 1) for y in range(count - 1, -1, -1)])
 
 
-
 def labelcolormap(N):
-    if N == 37: #35 # cityscape
+    if N == 37:  # 35 # cityscape
         cmap = np.array([(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (111, 74, 0), (81, 0, 81),
-                         (128, 64, 128), (244, 35, 232), (250, 170, 160), (230, 150, 140), (70, 70, 70), (102, 102, 156), (190, 153, 153),
-                         (180, 165, 180), (150, 100, 100), (150, 120, 90), (153, 153, 153), (153, 153, 153), (250, 170, 30), (220, 220, 0),
-                         (107, 142, 35), (152, 251, 152), (70, 130, 180), (220, 20, 60), (255, 0, 0), (0, 0, 142), (0, 0, 70),
+                         (128, 64, 128), (244, 35, 232), (250, 170, 160), (230, 150, 140), (70, 70, 70),
+                         (102, 102, 156), (190, 153, 153),
+                         (180, 165, 180), (150, 100, 100), (150, 120, 90), (153, 153, 153), (153, 153, 153),
+                         (250, 170, 30), (220, 220, 0),
+                         (107, 142, 35), (152, 251, 152), (70, 130, 180), (220, 20, 60), (255, 0, 0), (0, 0, 142),
+                         (0, 0, 70),
                          (0, 60, 100), (0, 0, 90), (0, 0, 110), (0, 80, 100), (0, 0, 230), (119, 11, 32), (0, 0, 142)],
                         dtype=np.uint8)
-    elif N == 19:#37
-        cmap = np.array([ (128, 64, 128),
-            (244, 35, 232),
-            (70, 70, 70),
-            (102, 102, 156),
-            (190, 153, 153),
-            (153, 153, 153),
-            (250, 170, 30),
-            (220, 220, 0),
-            (107, 142, 35),
-            (152, 251, 152),
-            (70, 130, 180),
-            (220, 20, 60),
-            (255, 0, 0),
-            (0, 0, 142),
-            (0, 0, 70),
-            (0, 60, 100),
-            (0, 80, 100),
-            (0, 0, 230),
-            (119, 11, 32),
-            (0, 0, 0)], dtype=np.uint8)
+    elif N == 19:  # 37
+        cmap = np.array([(128, 64, 128),
+                         (244, 35, 232),
+                         (70, 70, 70),
+                         (102, 102, 156),
+                         (190, 153, 153),
+                         (153, 153, 153),
+                         (250, 170, 30),
+                         (220, 220, 0),
+                         (107, 142, 35),
+                         (152, 251, 152),
+                         (70, 130, 180),
+                         (220, 20, 60),
+                         (255, 0, 0),
+                         (0, 0, 142),
+                         (0, 0, 70),
+                         (0, 60, 100),
+                         (0, 80, 100),
+                         (0, 0, 230),
+                         (119, 11, 32),
+                         (0, 0, 0)], dtype=np.uint8)
     else:
         cmap = np.zeros((N, 3), dtype=np.uint8)
         for i in range(N):

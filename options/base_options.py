@@ -3,14 +3,16 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-import sys
 import argparse
 import os
-from util import util
-import torch
-import models
-import data
 import pickle
+import sys
+
+import torch
+
+import data
+import models
+from util import util
 
 
 class BaseOptions():
@@ -19,51 +21,72 @@ class BaseOptions():
 
     def initialize(self, parser):
         # experiment specifics
-        parser.add_argument('--name', type=str, default='label2coco', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--name', type=str, default='label2coco',
+                            help='name of the experiment. It decides where to store samples and models')
 
         parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
-        
+
         parser.add_argument('--model', type=str, default='pix2pix', help='which model to use')
-        parser.add_argument('--norm_G', type=str, default='spectralinstance', help='instance normalization or batch normalization')
-        parser.add_argument('--norm_D', type=str, default='spectralinstance', help='instance normalization or batch normalization')
-        parser.add_argument('--norm_E', type=str, default='spectralinstance', help='instance normalization or batch normalization')
+        parser.add_argument('--norm_G', type=str, default='spectralinstance',
+                            help='instance normalization or batch normalization')
+        parser.add_argument('--norm_D', type=str, default='spectralinstance',
+                            help='instance normalization or batch normalization')
+        parser.add_argument('--norm_E', type=str, default='spectralinstance',
+                            help='instance normalization or batch normalization')
         parser.add_argument("--phase", type=str, default='train', help='train, val, test, etc')
 
         # input/output sizes
         parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
-        parser.add_argument('--preprocess_mode', type=str, default='scale_width_and_crop', help='scaling and cropping of images at load time.', choices=("resize_and_crop", "crop", "scale_width", "scale_width_and_crop", "scale_shortside", "scale_shortside_and_crop", "fixed", "none"))
-        parser.add_argument('--load_size', type=int, default=1024, help='Scale images to this size. The final image will be cropped to --crop_size.')
-        parser.add_argument('--crop_size', type=int, default=512, help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
-        parser.add_argument('--aspect_ratio', type=float, default=1.0, help='The ratio width/height. The final height of the load image will be crop_size/aspect_ratio')
-        parser.add_argument('--label_nc', type=int, default=182, help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
-        parser.add_argument('--contain_dontcare_label', action='store_true', help='if the label map contains dontcare label (dontcare=255)')
+        parser.add_argument('--preprocess_mode', type=str, default='scale_width_and_crop',
+                            help='scaling and cropping of images at load time.', choices=(
+                "resize_and_crop", "crop", "scale_width", "scale_width_and_crop", "scale_shortside",
+                "scale_shortside_and_crop", "fixed", "none"))
+        parser.add_argument('--load_size', type=int, default=1024,
+                            help='Scale images to this size. The final image will be cropped to --crop_size.')
+        parser.add_argument('--crop_size', type=int, default=512,
+                            help='Crop to the width of crop_size (after initially scaling the images to load_size.)')
+        parser.add_argument('--aspect_ratio', type=float, default=1.0,
+                            help='The ratio width/height. The final height of the load image will be crop_size/aspect_ratio')
+        parser.add_argument('--label_nc', type=int, default=182,
+                            help='# of input label classes without unknown class. If you have unknown class as class label, specify --contain_dopntcare_label.')
+        parser.add_argument('--contain_dontcare_label', action='store_true',
+                            help='if the label map contains dontcare label (dontcare=255)')
         parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
 
         # for setting inputs
         parser.add_argument('--dataroot', type=str, default='./datasets/cityscapes/')
         parser.add_argument('--dataset_mode', type=str, default='coco')
-        parser.add_argument('--serial_batches', action='store_true', help='if true, takes images in order to make batches, otherwise takes them randomly')
-        parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data argumentation')
+        parser.add_argument('--serial_batches', action='store_true',
+                            help='if true, takes images in order to make batches, otherwise takes them randomly')
+        parser.add_argument('--no_flip', action='store_true',
+                            help='if specified, do not flip the images for data argumentation')
         parser.add_argument('--nThreads', default=0, type=int, help='# threads for loading data')
-        parser.add_argument('--max_dataset_size', type=int, default=sys.maxsize, help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
-        parser.add_argument('--load_from_opt_file', action='store_true', help='load the options from checkpoints and use that as default')
-        parser.add_argument('--cache_filelist_write', action='store_true', help='saves the current filelist into a text file, so that it loads faster')
+        parser.add_argument('--max_dataset_size', type=int, default=sys.maxsize,
+                            help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
+        parser.add_argument('--load_from_opt_file', action='store_true',
+                            help='load the options from checkpoints and use that as default')
+        parser.add_argument('--cache_filelist_write', action='store_true',
+                            help='saves the current filelist into a text file, so that it loads faster')
         parser.add_argument('--cache_filelist_read', action='store_true', help='reads from the file list cache')
 
         # for displays
         parser.add_argument('--display_winsize', type=int, default=400, help='display window size')
 
         # for generator
-        parser.add_argument('--netG', type=str, default='spade', help='selects model to use for netG (pix2pixhd | spade | asapnets)')
+        parser.add_argument('--netG', type=str, default='spade',
+                            help='selects model to use for netG (pix2pixhd | spade | asapnets)')
         parser.add_argument('--ngf', type=int, default=64, help='# of gen filters in first conv layer')
-        parser.add_argument('--init_type', type=str, default='xavier', help='network initialization [normal|xavier|kaiming|orthogonal]')
-        parser.add_argument('--init_variance', type=float, default=0.02, help='variance of the initialization distribution')
+        parser.add_argument('--init_type', type=str, default='xavier',
+                            help='network initialization [normal|xavier|kaiming|orthogonal]')
+        parser.add_argument('--init_variance', type=float, default=0.02,
+                            help='variance of the initialization distribution')
         parser.add_argument('--z_dim', type=int, default=256,
                             help="dimension of the latent z vector")
 
         # for instance-wise features
-        parser.add_argument('--no_instance', action='store_true', help='if specified, do *not* add instance map as input')
+        parser.add_argument('--no_instance', action='store_true',
+                            help='if specified, do *not* add instance map as input')
 
         parser.add_argument('--nef', type=int, default=16, help='# of encoder filters in the first conv layer')
         parser.add_argument('--use_vae', action='store_true', help='enable training with an image encoder.')
@@ -73,9 +96,12 @@ class BaseOptions():
                             coarse-to-fine-grained adversarial (c2f) and segmentation (sem) heads')
         parser.add_argument('--c2f_sem_rec', action='store_true', help='training with D having \
                             coarse-to-fine-grained adversarial (c2f) and segmentation (sem) and reconstruction heads (rec) heads')
-        parser.add_argument('--added_capacity', action='store_true', help='add 10% capacity to D used for ablation studies')
-        parser.add_argument('--active_GSeg', action='store_true', help='whether the segmentation guidance is active for G')
-        parser.add_argument('--fine_tune', action='store_true', help='wheter fine_tune the model, usually with continue train')
+        parser.add_argument('--added_capacity', action='store_true',
+                            help='add 10% capacity to D used for ablation studies')
+        parser.add_argument('--active_GSeg', action='store_true',
+                            help='whether the segmentation guidance is active for G')
+        parser.add_argument('--fine_tune', action='store_true',
+                            help='wheter fine_tune the model, usually with continue train')
         parser.add_argument('--lambda_GAN', type=float, default=1.0, help='# weight of gan loss')
         parser.add_argument('--lambda_seg', type=float, default=1.0, help='# weight of segmentation loss')
         parser.add_argument('--lambda_rec', type=float, default=1.0, help='# weight of self autoencoder loss')
@@ -92,15 +118,21 @@ class BaseOptions():
         parser.add_argument('--lr_depth', type=int, default=7, help='low res stream number of conv layers')
         parser.add_argument('--hr_width', type=int, default=64, help='high res stream number of MLP channles')
         parser.add_argument('--hr_depth', type=int, default=5, help='high res stream number of MLP layers')
-        parser.add_argument('--reflection_pad', action='store_true', help='if specified, use reflection padding at lr stream')
-        parser.add_argument('--replicate_pad', action='store_true', help='if specified, use replicate padding at lr stream')
+        parser.add_argument('--reflection_pad', action='store_true',
+                            help='if specified, use reflection padding at lr stream')
+        parser.add_argument('--replicate_pad', action='store_true',
+                            help='if specified, use replicate padding at lr stream')
         parser.add_argument('--hr_coor', choices=('cosine', None), default='cosine')
         parser.add_argument('--no_one_hot', action='store_true', help='no one hot')
-        parser.add_argument('--reverse_mapping', action='store_true', help='if specified, do not flip the images for data argumentation')
+        parser.add_argument('--reverse_mapping', action='store_true',
+                            help='if specified, do not flip the images for data argumentation')
         # for instance-wise features
-        parser.add_argument('--no_instance_edge', action='store_true', help='if specified, do *not* add the edges of the instance map as input')
-        parser.add_argument('--no_instance_dist', action='store_true', help='if specified, do *not* add distence transform of the instance map as input')
-        parser.add_argument('--lr_instance', action='store_true', help='if specified, add instance map only to the lr-stream')
+        parser.add_argument('--no_instance_edge', action='store_true',
+                            help='if specified, do *not* add the edges of the instance map as input')
+        parser.add_argument('--no_instance_dist', action='store_true',
+                            help='if specified, do *not* add distence transform of the instance map as input')
+        parser.add_argument('--lr_instance', action='store_true',
+                            help='if specified, add instance map only to the lr-stream')
 
         self.initialized = True
         return parser
@@ -184,7 +216,7 @@ class BaseOptions():
     def parse(self, save=False):
 
         opt = self.gather_options()
-        opt.isTrain = self.isTrain   # train or test
+        opt.isTrain = self.isTrain  # train or test
 
         self.print_options(opt)
         if opt.isTrain:
@@ -193,8 +225,8 @@ class BaseOptions():
         # Set semantic_nc based on the option.
         # This will be convenient in many places
         opt.semantic_nc = opt.label_nc + \
-            (1 if opt.contain_dontcare_label else 0) + \
-            (0 if opt.no_instance else 1)
+                          (1 if opt.contain_dontcare_label else 0) + \
+                          (0 if opt.no_instance else 1)
 
         # set gpu ids
         str_ids = opt.gpu_ids.split(',')

@@ -1,11 +1,9 @@
-import pdb
+import math
 
 import torch.nn as nn
-import math
 import torch.utils.model_zoo as model_zoo
 
 BatchNorm = nn.BatchNorm2d
-
 
 # __all__ = ['DRN', 'drn26', 'drn42', 'drn58']
 

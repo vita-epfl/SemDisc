@@ -4,6 +4,7 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 """
 
 import importlib
+
 import torch
 
 
@@ -21,11 +22,13 @@ def find_model_using_name(model_name):
     target_model_name = model_name.replace('_', '') + 'model'
     for name, cls in modellib.__dict__.items():
         if name.lower() == target_model_name.lower() \
-           and issubclass(cls, torch.nn.Module):
+                and issubclass(cls, torch.nn.Module):
             model = cls
 
     if model is None:
-        print("In %s.py, there should be a subclass of torch.nn.Module with class name that matches %s in lowercase." % (model_filename, target_model_name))
+        print(
+            "In %s.py, there should be a subclass of torch.nn.Module with class name that matches %s in lowercase." % (
+                model_filename, target_model_name))
         exit(0)
 
     return model

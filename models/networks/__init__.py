@@ -3,15 +3,13 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-import torch
-from models.networks.base_network import BaseNetwork
-from models.networks.loss import *
-from models.networks.discriminator import *
-from models.networks.generator import *
-from models.networks.encoder import *
-from models.networks.resnet import *
-from models.networks.PSPNet import *
 import util.util as util
+from models.networks.base_network import BaseNetwork
+from models.networks.discriminator import *
+from models.networks.encoder import *
+from models.networks.generator import *
+from models.networks.loss import *
+from models.networks.resnet import *
 
 
 def find_network_using_name(target_network_name, filename):
@@ -43,7 +41,7 @@ def create_network(cls, opt):
     net = cls(opt)
     net.print_network()
     if len(opt.gpu_ids) > 0:
-        assert(torch.cuda.is_available())
+        assert (torch.cuda.is_available())
         net.cuda()
     net.init_weights(opt.init_type, opt.init_variance)
     return net

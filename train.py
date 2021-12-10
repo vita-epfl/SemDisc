@@ -5,11 +5,12 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 
 import sys
 from collections import OrderedDict
-from options.train_options import TrainOptions
+
 import data
+from options.train_options import TrainOptions
+from trainers.pix2pix_trainer import Pix2PixTrainer
 from util.iter_counter import IterationCounter
 from util.visualizer import Visualizer
-from trainers.pix2pix_trainer import Pix2PixTrainer
 
 # parse options
 opt = TrainOptions().parse()
@@ -65,7 +66,7 @@ for epoch in iter_counter.training_epochs():
     iter_counter.record_epoch_end()
 
     if epoch % opt.save_epoch_freq == 0 or \
-       epoch == iter_counter.total_epochs:
+            epoch == iter_counter.total_epochs:
         print('saving the model at the end of epoch %d, iters %d' %
               (epoch, iter_counter.total_steps_so_far))
         trainer.save('latest')

@@ -4,11 +4,12 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 """
 
 import re
-import torch
+
 import torch.nn as nn
 import torch.nn.functional as F
-from models.networks.sync_batchnorm import SynchronizedBatchNorm2d
 import torch.nn.utils.spectral_norm as spectral_norm
+
+from models.networks.sync_batchnorm import SynchronizedBatchNorm2d
 
 
 # Returns a function that creates a normalization function

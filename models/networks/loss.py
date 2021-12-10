@@ -6,6 +6,7 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from models.networks.architecture import VGG19
 
 
@@ -19,10 +20,12 @@ class WMSELoss(nn.Module):
     def __init__(self):
         super(WMSELoss, self).__init__()
 
-    def forward(self, ori_image, target_image, weight, loss_weight = None):
-        self.loss = torch.sum(weight * (ori_image - target_image)**2)/((ori_image.shape[0])*(ori_image.shape[1])*(ori_image.shape[2])*(ori_image.shape[3]))
-           
+    def forward(self, ori_image, target_image, weight, loss_weight=None):
+        self.loss = torch.sum(weight * (ori_image - target_image) ** 2) / (
+                (ori_image.shape[0]) * (ori_image.shape[1]) * (ori_image.shape[2]) * (ori_image.shape[3]))
+
         return self.loss
+
 
 class WHingeLoss(nn.Module):
 
@@ -30,14 +33,14 @@ class WHingeLoss(nn.Module):
         super(WHingeLoss, self).__init__()
 
     def forward(self, inp, label, weight):
-        self.loss = weight*torch.min(inp, label)
+        self.loss = weight * torch.min(inp, label)
 
         return self.loss
 
 
 class GANLoss(nn.Module):
     def __init__(self, gan_mode, target_real_label=1.0, target_fake_label=0.0,
-                 tensor=torch.FloatTensor, opt=None, wmse = False):
+                 tensor=torch.FloatTensor, opt=None, wmse=False):
         super(GANLoss, self).__init__()
         self.wmse = wmse
         self.real_label = target_real_label
@@ -80,7 +83,7 @@ class GANLoss(nn.Module):
             self.zero_tensor.requires_grad_(False)
         return self.zero_tensor.expand_as(input)
 
-    def loss(self, input, target_is_real, weight = None, for_discriminator=True):
+    def loss(self, input, target_is_real, weight=None, for_discriminator=True):
         if self.gan_mode == 'original':  # cross entropy loss
             target_tensor = self.get_target_tensor(input, target_is_real)
             loss = F.binary_cross_entropy_with_logits(input, target_tensor)
@@ -88,7 +91,7 @@ class GANLoss(nn.Module):
         elif self.gan_mode == 'ls':
             target_tensor = self.get_target_tensor(input, target_is_real)
             if self.wmse:
-                loss = self.wmse_loss(input, target_tensor, weight,loss_weight = None)
+                loss = self.wmse_loss(input, target_tensor, weight, loss_weight=None)
             else:
                 loss = F.mse_loss(input, target_tensor)
             return loss
@@ -98,19 +101,19 @@ class GANLoss(nn.Module):
                     minval = torch.min(input - 1, self.get_zero_tensor(input))
                     if self.wmse:
                         minval = weight * minval
-                        
+
                     loss = -torch.mean(minval)
                 else:
                     minval = torch.min(-input - 1, self.get_zero_tensor(input))
                     if self.wmse:
-                        minval = weight*minval
-                        
+                        minval = weight * minval
+
                     loss = -torch.mean(minval)
             else:
                 assert target_is_real, "The generator's hinge loss must be aiming for real"
                 minval = input
                 if self.wmse:
-                    minval = weight*minval
+                    minval = weight * minval
                 loss = -torch.mean(minval)
             return loss
         else:
@@ -130,7 +133,7 @@ class GANLoss(nn.Module):
                 for pred_i in input:
                     if isinstance(pred_i, list):
                         pred_i = pred_i[-1]
-                    
+
                     loss_tensor = self.loss(pred_i, target_is_real, weight[k], for_discriminator)
                     bs = 1 if len(loss_tensor.size()) == 0 else loss_tensor.size(0)
                     new_loss = torch.mean(loss_tensor.view(bs, -1), dim=1)
@@ -153,6 +156,7 @@ class GANLoss(nn.Module):
                 return loss / len(input)
             else:
                 return self.loss(input, target_is_real, weight, for_discriminator)
+
 
 # Perceptual loss that uses a pretrained VGG network
 class VGGLoss(nn.Module):

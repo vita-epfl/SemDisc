@@ -9,6 +9,7 @@
 # Distributed under MIT License.
 
 import unittest
+
 import torch
 
 
@@ -26,4 +27,3 @@ class TorchTestCase(unittest.TestCase):
             'rdiff={}\n'
         ).format(adiff, rdiff)
         self.assertTrue(torch.allclose(x, y), message)
-

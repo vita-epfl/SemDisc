@@ -3,13 +3,15 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision
 import torch.nn.utils.spectral_norm as spectral_norm
+import torchvision
+
 from models.networks.normalization import SPADE
-import numpy as np
+
 
 # ResNet block that uses SPADE.
 # It differs from the ResNet block of pix2pixHD in that
@@ -137,8 +139,10 @@ class ASAPNetsResnetBlock(nn.Module):
         out = x + y
         return out
 
+
 class ASAPNetsBlock(nn.Module):
-    def __init__(self, dim, norm_layer, activation=nn.ReLU(True), kernel_size=3, reflection_pad=False, replicate_pad=False):
+    def __init__(self, dim, norm_layer, activation=nn.ReLU(True), kernel_size=3, reflection_pad=False,
+                 replicate_pad=False):
         super().__init__()
         padw = 1
         if reflection_pad:
@@ -171,13 +175,15 @@ class ASAPNetsGradBlock(nn.Module):
                                             activation
                                             )
         else:
-            self.conv_block = nn.Sequential(norm_layer(nn.Conv2d(dim_in, dim_out, kernel_size=kernel_size, padding=padw)),
-                                            activation
-                                            )
+            self.conv_block = nn.Sequential(
+                norm_layer(nn.Conv2d(dim_in, dim_out, kernel_size=kernel_size, padding=padw)),
+                activation
+            )
 
     def forward(self, x):
         out = self.conv_block(x)
         return out
+
 
 class MySeparableBilinearDownsample(torch.nn.Module):
     def __init__(self, stride, channels, use_gpu):
@@ -186,17 +192,17 @@ class MySeparableBilinearDownsample(torch.nn.Module):
         self.channels = channels
 
         # create tent kernel
-        kernel = np.arange(1,2*stride+1,2) # ramp up
-        kernel = np.concatenate((kernel,kernel[::-1])) # reflect it and concatenate
+        kernel = np.arange(1, 2 * stride + 1, 2)  # ramp up
+        kernel = np.concatenate((kernel, kernel[::-1]))  # reflect it and concatenate
         if use_gpu:
-            kernel = torch.Tensor(kernel/np.sum(kernel)).to(device='cuda') # normalize
+            kernel = torch.Tensor(kernel / np.sum(kernel)).to(device='cuda')  # normalize
         else:
             kernel = torch.Tensor(kernel / np.sum(kernel))
-        self.register_buffer('kernel_horz', kernel[None,None,None,:].repeat((self.channels,1,1,1)))
-        self.register_buffer('kernel_vert', kernel[None,None,:,None].repeat((self.channels,1,1,1)))
+        self.register_buffer('kernel_horz', kernel[None, None, None, :].repeat((self.channels, 1, 1, 1)))
+        self.register_buffer('kernel_vert', kernel[None, None, :, None].repeat((self.channels, 1, 1, 1)))
 
-        self.refl = nn.ReflectionPad2d(int(stride/2))#nn.ReflectionPad2d(int(stride/2))
+        self.refl = nn.ReflectionPad2d(int(stride / 2))  # nn.ReflectionPad2d(int(stride/2))
 
     def forward(self, input):
-        return F.conv2d(F.conv2d(self.refl(input), self.kernel_horz, stride=(1,self.stride), groups=self.channels),
-                    self.kernel_vert, stride=(self.stride,1), groups=self.channels)
+        return F.conv2d(F.conv2d(self.refl(input), self.kernel_horz, stride=(1, self.stride), groups=self.channels),
+                        self.kernel_vert, stride=(self.stride, 1), groups=self.channels)

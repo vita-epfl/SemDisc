@@ -3,6 +3,8 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
+import os
+
 ###############################################################################
 # Code from
 # https://github.com/pytorch/vision/blob/master/torchvision/datasets/folder.py
@@ -11,7 +13,6 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 ###############################################################################
 import torch.utils.data as data
 from PIL import Image
-import os
 
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
@@ -74,9 +75,9 @@ class ImageFolder(data.Dataset):
                  loader=default_loader):
         imgs = make_dataset(root)
         if len(imgs) == 0:
-            raise(RuntimeError("Found 0 images in: " + root + "\n"
-                               "Supported image extensions are: " +
-                               ",".join(IMG_EXTENSIONS)))
+            raise (RuntimeError("Found 0 images in: " + root + "\n"
+                                                               "Supported image extensions are: " +
+                                ",".join(IMG_EXTENSIONS)))
 
         self.root = root
         self.imgs = imgs

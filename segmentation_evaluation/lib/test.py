@@ -1,6 +1,5 @@
-import pdb
-import time
 import logging
+import time
 
 import torch
 from torch.autograd import Variable
@@ -37,7 +36,6 @@ if cuda:
     bn1 = bn1.cuda()
     bn2 = bn2.cuda()
     input = input.cuda()
-
 
 inputs = (Variable(input, requires_grad=True),)
 # output = bn(inputs[0])

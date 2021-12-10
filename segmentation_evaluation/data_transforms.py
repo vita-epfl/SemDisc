@@ -2,8 +2,8 @@ import numbers
 import random
 
 import numpy as np
-from PIL import Image, ImageOps
 import torch
+from PIL import Image, ImageOps
 
 
 class RandomCrop(object):
@@ -146,11 +146,11 @@ def pad_reflection(image, top, bottom, left, right):
     new_shape[0] += top + bottom
     new_shape[1] += left + right
     new_image = np.empty(new_shape, dtype=image.dtype)
-    new_image[top:top+h, left:left+w] = image
-    new_image[:top, left:left+w] = image[top:0:-1, :]
-    new_image[top+h:, left:left+w] = image[-1:-bottom-1:-1, :]
-    new_image[:, :left] = new_image[:, left*2:left:-1]
-    new_image[:, left+w:] = new_image[:, -right-1:-right*2-1:-1]
+    new_image[top:top + h, left:left + w] = image
+    new_image[:top, left:left + w] = image[top:0:-1, :]
+    new_image[top + h:, left:left + w] = image[-1:-bottom - 1:-1, :]
+    new_image[:, :left] = new_image[:, left * 2:left:-1]
+    new_image[:, left + w:] = new_image[:, -right - 1:-right * 2 - 1:-1]
     return pad_reflection(new_image, next_top, next_bottom,
                           next_left, next_right)
 
@@ -164,7 +164,7 @@ def pad_constant(image, top, bottom, left, right, value):
     new_shape[1] += left + right
     new_image = np.empty(new_shape, dtype=image.dtype)
     new_image.fill(value)
-    new_image[top:top+h, left:left+w] = image
+    new_image[top:top + h, left:left + w] = image
     return new_image
 
 

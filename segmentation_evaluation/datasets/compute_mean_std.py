@@ -1,8 +1,9 @@
 import argparse
 import json
+from os import path as osp
+
 import numpy as np
 from PIL import Image
-from os import path as osp
 
 
 def compute_mean_std(data_dir, list_dir):

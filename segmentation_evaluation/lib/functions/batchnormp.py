@@ -1,13 +1,10 @@
-import pdb
-
-import numpy as np
-
-import torch
-from torch.autograd import Function
-from dense import batch_norm
-
 from queue import Queue
 from threading import Condition
+
+import numpy as np
+import torch
+from dense import batch_norm
+from torch.autograd import Function
 
 cum_queue = Queue()
 broadcast_queue = Queue()

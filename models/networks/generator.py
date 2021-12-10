@@ -3,18 +3,20 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
+from math import log2
+from math import pi
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models.networks.base_network import BaseNetwork
-from models.networks.normalization import get_nonspade_norm_layer
-from models.networks.architecture import ResnetBlock as ResnetBlock
-from models.networks.architecture import SPADEResnetBlock as SPADEResnetBlock
 
 from models.networks.architecture import ASAPNetsBlock as ASAPNetsBlock
 from models.networks.architecture import MySeparableBilinearDownsample as BilinearDownsample
-from math import pi
-from math import log2
+from models.networks.architecture import ResnetBlock as ResnetBlock
+from models.networks.architecture import SPADEResnetBlock as SPADEResnetBlock
+from models.networks.base_network import BaseNetwork
+from models.networks.normalization import get_nonspade_norm_layer
+
 
 class SPADEGenerator(BaseNetwork):
     @staticmethod
@@ -72,7 +74,7 @@ class SPADEGenerator(BaseNetwork):
             raise ValueError('opt.num_upsampling_layers [%s] not recognized' %
                              opt.num_upsampling_layers)
 
-        sw = opt.crop_size // (2**num_up_layers)
+        sw = opt.crop_size // (2 ** num_up_layers)
         sh = round(sw / opt.aspect_ratio)
 
         return sw, sh
@@ -98,7 +100,7 @@ class SPADEGenerator(BaseNetwork):
         x = self.G_middle_0(x, seg)
 
         if self.opt.num_upsampling_layers == 'more' or \
-           self.opt.num_upsampling_layers == 'most':
+                self.opt.num_upsampling_layers == 'most':
             x = self.up(x)
 
         x = self.G_middle_1(x, seg)
@@ -126,7 +128,8 @@ class Pix2PixHDGenerator(BaseNetwork):
     @staticmethod
     def modify_commandline_options(parser, is_train):
         parser.add_argument('--resnet_n_downsample', type=int, default=4, help='number of downsampling layers in netG')
-        parser.add_argument('--resnet_n_blocks', type=int, default=9, help='number of residual blocks in the global generator network')
+        parser.add_argument('--resnet_n_blocks', type=int, default=9,
+                            help='number of residual blocks in the global generator network')
         parser.add_argument('--resnet_kernel_size', type=int, default=3,
                             help='kernel size of the resnet block')
         parser.add_argument('--resnet_initial_kernel_size', type=int, default=7,
@@ -186,7 +189,6 @@ class Pix2PixHDGenerator(BaseNetwork):
         return self.model(input)
 
 
-
 class ASAPNetsGenerator(BaseNetwork):
     @staticmethod
     def modify_commandline_options(parser, is_train):
@@ -201,14 +203,14 @@ class ASAPNetsGenerator(BaseNetwork):
         if lr_stream is None or hr_stream is None:
             lr_stream = dict()
             hr_stream = dict()
-        self.num_inputs = opt.label_nc + (1 if opt.contain_dontcare_label else 0) + (0 if (opt.no_instance_edge & opt.no_instance_dist) else 1)
+        self.num_inputs = opt.label_nc + (1 if opt.contain_dontcare_label else 0) + (
+            0 if (opt.no_instance_edge & opt.no_instance_dist) else 1)
         self.lr_instance = opt.lr_instance
-        self.learned_ds_factor = opt.learned_ds_factor #(S2 in sec. 3.2)
+        self.learned_ds_factor = opt.learned_ds_factor  # (S2 in sec. 3.2)
         self.gpu_ids = opt.gpu_ids
 
         # calculates the total downsampling factor in order to get the final low-res grid of parameters (S=S1xS2 in sec. 3.2)
         self.downsampling = opt.crop_size // (16 * opt.aspect_ratio)
-
 
         self.highres_stream = ASAPNetsHRStream(self.downsampling, num_inputs=self.num_inputs,
                                                num_outputs=opt.output_nc, width=opt.hr_width,
@@ -230,8 +232,8 @@ class ASAPNetsGenerator(BaseNetwork):
     def get_lowres(self, im):
         """Creates a lowres version of the input."""
         device = self.use_gpu()
-        if(self.learned_ds_factor != self.downsampling):
-            myds = BilinearDownsample(int(self.downsampling//self.learned_ds_factor), self.num_inputs,device)
+        if (self.learned_ds_factor != self.downsampling):
+            myds = BilinearDownsample(int(self.downsampling // self.learned_ds_factor), self.num_inputs, device)
             return myds(im)
         else:
             return im
@@ -240,7 +242,7 @@ class ASAPNetsGenerator(BaseNetwork):
         lowres = self.get_lowres(highres)
         lr_features = self.lowres_stream(lowres)
         output = self.highres_stream(highres, lr_features)
-        return output, lr_features#, lowres
+        return output, lr_features  # , lowres
 
 
 def _get_coords(bs, h, w, device, ds, coords_type):
@@ -264,7 +266,7 @@ def _get_coords(bs, h, w, device, ds, coords_type):
                 coords = torch.cat([coords, coords_cur], 1).to(device)
             else:
                 coords = coords_cur
-            f = f//2
+            f = f // 2
     else:
         raise NotImplementedError()
     return coords.to(device)
@@ -272,6 +274,7 @@ def _get_coords(bs, h, w, device, ds, coords_type):
 
 class ASAPNetsLRStream(torch.nn.Sequential):
     """Convolutional LR stream to estimate the pixel-wise MLPs parameters"""
+
     def __init__(self, num_in, num_out, norm_layer, width=64, max_width=1024, depth=7, learned_ds_factor=16,
                  reflection_pad=False, replicate_pad=False):
         super(ASAPNetsLRStream, self).__init__()
@@ -300,17 +303,17 @@ class ASAPNetsLRStream(torch.nn.Sequential):
                 model += [torch.nn.ReflectionPad2d(1)]
             if replicate_pad:
                 model += [torch.nn.ReplicationPad2d(1)]
-            if i == num_ds_layers-1:
+            if i == num_ds_layers - 1:
                 last_width = max_width
                 model += [norm_layer(torch.nn.Conv2d(width, last_width, 3, stride=2, padding=padw)),
                           torch.nn.ReLU(inplace=True)]
                 width = last_width
             else:
                 model += [norm_layer(torch.nn.Conv2d(width, width, 3, stride=2, padding=padw)),
-                      torch.nn.ReLU(inplace=True)]
+                          torch.nn.ReLU(inplace=True)]
 
         # ConvNet to estimate the MLPs parameters"
-        for i in range(count_ly, count_ly+depth):
+        for i in range(count_ly, count_ly + depth):
             model += [ASAPNetsBlock(width, norm_layer, reflection_pad=reflection_pad, replicate_pad=replicate_pad)]
 
         # Final parameter prediction layer, transfer conv channels into the per-pixel number of MLP parameters
@@ -324,6 +327,7 @@ class ASAPNetsLRStream(torch.nn.Sequential):
 
 class ASAPNetsHRStream(torch.nn.Module):
     """Addaptive pixel-wise MLPs"""
+
     def __init__(self, downsampling,
                  num_inputs=13, num_outputs=3, width=64, depth=5, coordinates="cosine",
                  no_one_hot=False, lr_instance=False):
@@ -349,12 +353,11 @@ class ASAPNetsHRStream(torch.nn.Module):
     def ds(self):
         return self.downsampling
 
-
     def _set_channels(self):
         """Compute and store the hr-stream layer dimensions."""
         in_ch = self.num_inputs
         if self.coordinates == "cosine":
-            in_ch += int(4*log2(self.downsampling))
+            in_ch += int(4 * log2(self.downsampling))
         self.channels = [in_ch]
         for _ in range(self.depth - 1):  # intermediate layer -> cste size
             self.channels.append(self.width)
@@ -400,11 +403,10 @@ class ASAPNetsHRStream(torch.nn.Module):
         bs, _, h_lr, w_lr = lr_params.shape
 
         # Spatial encoding
-        if not(self.coordinates is None):
+        if not (self.coordinates is None):
             if self.xy_coords is None:
                 self.xy_coords = _get_coords(bs, h, w, highres.device, self.ds, self.coordinates)
             highres = torch.cat([highres, self.xy_coords], 1)
-
 
         # Split input in tiles of size kxk according to the NN interp factor (the total downsampling factor),
         # with channels last (for matmul)

@@ -1,13 +1,11 @@
 import torch
 import torch.nn as nn
-import math
 import torch.utils.model_zoo as model_zoo
 
 BatchNorm = nn.BatchNorm2d
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
-
 
 model_urls = {
     'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',

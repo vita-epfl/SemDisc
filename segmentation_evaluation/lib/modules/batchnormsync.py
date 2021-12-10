@@ -1,13 +1,12 @@
 from queue import Queue
 
 import torch
+from functions.batchnormp import BatchNormPFunction
 from torch.nn import Module
 from torch.nn.parameter import Parameter
-from functions.batchnormp import BatchNormPFunction
 
 
 class BatchNormSync(Module):
-
     sync = True
     checking_mode = False
 
@@ -53,7 +52,7 @@ class BatchNormSync(Module):
         assert input.size(1) == self.num_features
 
         bn_func = BatchNormPFunction(
-            self.running_mean, self.running_var, # self.mean, self.std,
+            self.running_mean, self.running_var,  # self.mean, self.std,
             training, self.cum_queue, self.broadcast_queue, self.device_ids,
             BatchNormSync.sync, self.eps, self.momentum, self.affine)
         return bn_func(input, self.weight, self.bias)

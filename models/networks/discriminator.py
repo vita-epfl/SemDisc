@@ -3,12 +3,13 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-import torch.nn as nn
 import numpy as np
+import torch.nn as nn
 import torch.nn.functional as F
+
+import util.util as util
 from models.networks.base_network import BaseNetwork
 from models.networks.normalization import get_nonspade_norm_layer
-import util.util as util
 
 
 class MultiscaleDiscriminator(BaseNetwork):
@@ -80,13 +81,13 @@ class NLayerDiscriminator(BaseNetwork):
         nf = opt.ndf
         input_nc = self.compute_D_input_nc(opt)
         if self.opt.c2f:
-            output_nc = 35+1
+            output_nc = 35 + 1
         elif self.opt.c2f_sem:
-            output_nc = 35+1+19 #fine+coarse+semantics
-            input_nc = 3 # we remove segmentation from the input of D
+            output_nc = 35 + 1 + 19  # fine+coarse+semantics
+            input_nc = 3  # we remove segmentation from the input of D
         elif self.opt.c2f_sem_rec:
-            output_nc = 35+1+19+3   # fine+coarse+semantics+the image back
-            input_nc = 3 # we remove segmentation from the input of D
+            output_nc = 35 + 1 + 19 + 3  # fine+coarse+semantics+the image back
+            input_nc = 3  # we remove segmentation from the input of D
         elif self.opt.added_capacity:
             output_nc = 35
         else:

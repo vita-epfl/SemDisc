@@ -4,7 +4,9 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 """
 
 import importlib
+
 import torch.utils.data
+
 from data.base_dataset import BaseDataset
 
 
@@ -22,9 +24,9 @@ def find_dataset_using_name(dataset_name):
     target_dataset_name = dataset_name.replace('_', '') + 'dataset'
     for name, cls in datasetlib.__dict__.items():
         if name.lower() == target_dataset_name.lower() \
-           and issubclass(cls, BaseDataset):
+                and issubclass(cls, BaseDataset):
             dataset = cls
-            
+
     if dataset is None:
         raise ValueError("In %s.py, there should be a subclass of BaseDataset "
                          "with class name that matches %s in lowercase." %
@@ -33,7 +35,7 @@ def find_dataset_using_name(dataset_name):
     return dataset
 
 
-def get_option_setter(dataset_name):    
+def get_option_setter(dataset_name):
     dataset_class = find_dataset_using_name(dataset_name)
     return dataset_class.modify_commandline_options
 

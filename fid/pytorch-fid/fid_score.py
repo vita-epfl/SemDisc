@@ -38,16 +38,16 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 import numpy as np
 import torch
+from PIL import Image
 from scipy import linalg
 from torch.nn.functional import adaptive_avg_pool2d
-
-from PIL import Image
 
 try:
     from tqdm import tqdm
 except ImportError:
     # If not tqdm is not available, provide a mock version of it
-    def tqdm(x): return x
+    def tqdm(x):
+        return x
 
 from inception import InceptionV3
 

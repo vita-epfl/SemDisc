@@ -2,7 +2,8 @@
 
 ### Step 1
 
-After you get a vanilla version of Cityscape data label maps, first convert the original segmentation label ids to one of 19 training ids:
+After you get a vanilla version of Cityscape data label maps, first convert the original segmentation label ids to one
+of 19 training ids:
 
 ```
 python3 datasets/cityscapes/prepare_data.py <cityscape folder>/gtFine/

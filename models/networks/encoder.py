@@ -3,9 +3,10 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 
-import torch.nn as nn
 import numpy as np
+import torch.nn as nn
 import torch.nn.functional as F
+
 from models.networks.base_network import BaseNetwork
 from models.networks.normalization import get_nonspade_norm_layer
 

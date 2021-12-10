@@ -101,7 +101,6 @@ After you have the trained networks, run the test as follows to get the synthesi
 original and semdisc models
 
 ```
-name='spade_semdisc' # or spade_orig
 python test.py --name $name --dataset_mode cityscapes \
 --checkpoints_dir <checkpoints path> --dataroot <data path> --results_dir ./results/ \
 --which_epoch latest --aspect_ratio 1 --load_size 256 --crop_size 256 \

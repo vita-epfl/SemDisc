@@ -12,7 +12,7 @@ cd ../
 module load gcc python py-torchvision py-torch
 source ../ven*/bin/activate
 
-name='tmp'
+name='spade_semdisc'
 cd datasets/cityscapes/
 convert -sample 512X256\! "/scratch/izar/saeedsa/spade/results/"$name"/test_latest/images/synthesized_image/*.png" -set filename:base "%[base]" "synthesized_image/%[filename:base].png"
 find synthesized_image/ -maxdepth 3 -name "*_leftImg8bit.png" | sort > val_images.txt

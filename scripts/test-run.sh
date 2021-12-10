@@ -14,14 +14,13 @@ source ../ven*/bin/activate
 
 # You can change G to different options --netG spade, --netG asapnets, --netG pix2pixhd
 
-name='spade_semdisc' # or spade_orig
+name='spade' # or spade_orig
 python test.py --name $name --dataset_mode cityscapes \
 --checkpoints_dir /scratch/izar/saeedsa/spade/checkpoints \
 --dataroot /scratch/izar/saeedsa/pix2pixHD/datasets/cityscape \
 --results_dir /scratch/izar/saeedsa/spade/results/ \
---which_epoch latest \
---aspect_ratio 1 --load_size 256 --crop_size 256 \
---netG spade --how_many 500
+--which_epoch latest --aspect_ratio 1 --load_size 256 --crop_size 256 \
+--netG spade --how_many 496
 
 # FID calculation
 python fid/pytorch-fid/fid_score.py \

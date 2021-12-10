@@ -16,5 +16,4 @@ source ../ven*/bin/activate
 
 python train.py --name spade_orig --dataset_mode cityscapes --netG spade \
 --checkpoints_dir /scratch/izar/saeedsa/spade/checkpoints --dataroot /scratch/izar/saeedsa/pix2pixHD/datasets/cityscape \
---niter_decay 100 --niter 100 \
---aspect_ratio 1 --load_size 256 --crop_size 256 --batchSize 16 --gpu_ids 0
+--niter_decay 100 --niter 100 --aspect_ratio 1 --load_size 256 --crop_size 256 --batchSize 16 --gpu_ids 0

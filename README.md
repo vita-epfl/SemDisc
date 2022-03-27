@@ -1,10 +1,12 @@
 <div align="center">
 <h1> A Shared Representation for Photorealistic Driving Simulators </h1>
-<h3> <i>[Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en)_, 2021.</i></h3>
+<h3> [Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en)_, 2021.</h3>
  <h4> <i> VITA lab, EPFL, Switzerland </i></h4>
  
  [[paper](https://ieeexplore.ieee.org/abstract/document/9635715)] [[arXiv](https://arxiv.org/abs/2112.05134)]
 
+
+The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", IEEE Transactions on Intelligent Transportation Systems, 2021
 
 <p align="center">
   <a href="url"><img src="imgs/results.png"  height="512" width="1024" ></a>
@@ -27,11 +29,6 @@ We demonstrate the strength of our method on the scene, building, and human synt
 --------
 
 
-
-
-# 
-
-The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", IEEE Transactions on Intelligent Transportation Systems, 2021
 
 
 ## Getting Started

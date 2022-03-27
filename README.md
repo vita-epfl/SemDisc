@@ -6,7 +6,9 @@
  [[paper](https://ieeexplore.ieee.org/abstract/document/9635715)] [[arXiv](https://arxiv.org/abs/2112.05134)]
 
 
-<image src="https://github.com/FraLuca/STSGCN/blob/main/pipeline-cameraready-1.png" width="600">
+<p align="center">
+  <a href="url"><img src="imgs/results.png"  height="512" width="1024" ></a>
+</p> 
 </div>
 
 <div align="center"> <h3> Abstract </h3>  </div>
@@ -31,12 +33,6 @@ We demonstrate the strength of our method on the scene, building, and human synt
 
 The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", IEEE Transactions on Intelligent Transportation Systems, 2021
 
-
-## Example
-
-<p align="center">
-  <a href="url"><img src="imgs/results.png"  height="512" width="1024" ></a>
-</p>  
 
 ## Getting Started
 

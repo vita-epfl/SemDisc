@@ -1,9 +1,12 @@
+
 <div align="center">
 <h1> A Shared Representation for Photorealistic Driving Simulators </h1>
-<h3> <i>[Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en) </i></h3>
- <h4> <i> VITA lab, EPFL, Switzerland </i></h4>
+<h3><i><a href="https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en">Saeed Saadatnejad</a>, <a href="https://dblp.org/pid/203/8404.html"> Taylor Mordan</a>, <a href="https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en"> Siyuan Li </a>, <a href="https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en"> Alexandre Alahi </a> </i></h3>
+<h4> <i> VITA lab, EPFL, Switzerland </i></h4>
+
+
  
- [[paper](https://ieeexplore.ieee.org/abstract/document/9635715)] [[arXiv](https://arxiv.org/abs/2112.05134)]
+[[paper](https://ieeexplore.ieee.org/abstract/document/9635715)] [[arXiv](https://arxiv.org/abs/2112.05134)]
 
 
 The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", IEEE Transactions on Intelligent Transportation Systems, 2021

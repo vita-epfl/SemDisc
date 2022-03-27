@@ -1,6 +1,6 @@
 <div align="center">
 <h1> A Shared Representation for Photorealistic Driving Simulators </h1>
-<h3> [Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en)_, 2021.</h3>
+<h3> <i>[Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en) </i></h3>
  <h4> <i> VITA lab, EPFL, Switzerland </i></h4>
  
  [[paper](https://ieeexplore.ieee.org/abstract/document/9635715)] [[arXiv](https://arxiv.org/abs/2112.05134)]
@@ -26,8 +26,6 @@ The achieved improvements are generic and simple enough to be applied to any arc
 We demonstrate the strength of our method on the scene, building, and human synthesis tasks across three different datasets.
   
 </div>
---------
-
 
 
 

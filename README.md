@@ -1,20 +1,36 @@
-# A Shared Representation for Photorealistic Driving Simulators
+<div align="center">
+<h1> A Shared Representation for Photorealistic Driving Simulators </h1>
+<h3> <i>[Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en)_, 2021.</i></h3>
+ <h4> <i> VITA lab, EPFL, Switzerland </i></h4>
+ 
+ [[paper](https://ieeexplore.ieee.org/abstract/document/9635715)] [[arXiv](https://arxiv.org/abs/2112.05134)]
 
-The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators"
-, [paper](https://ieeexplore.ieee.org/abstract/document/9635715), [arXiv](https://arxiv.org/abs/2112.05134)
 
-> __A Shared Representation for Photorealistic Driving Simulators__<br />
-> _[Saeed Saadatnejad](https://scholar.google.com/citations?user=PBdhgFYAAAAJ&hl=en), [Siyuan Li](https://scholar.google.ch/citations?user=80_DZiwAAAAJ&hl=en), [Taylor Mordan](https://dblp.org/pid/203/8404.html), [Alexandre Alahi](https://scholar.google.com/citations?user=UIhXQ64AAAAJ&hl=en)_, 2021.
-> A powerful simulator highly decreases the need for real-world tests when training and evaluating autonomous vehicles.
-> Data-driven simulators flourished with the recent advancement of conditional Generative Adversarial Networks (cGANs), providing high-fidelity images.
-> The main challenge is synthesizing photo-realistic images while following given constraints.
-> In this work, we propose to improve the quality of generated images by rethinking the discriminator architecture.
-> The focus is on the class of problems where images are generated given semantic inputs, such as scene segmentation maps or human body poses.
-> We build on successful cGAN models to propose a new semantically-aware discriminator that better guides the generator.
-> We aim to learn a shared latent representation that encodes enough information to jointly do semantic segmentation, content reconstruction, along with a coarse-to-fine grained adversarial reasoning.
-> The achieved improvements are generic and simple enough to be applied to any architecture of conditional image synthesis.
-> We demonstrate the strength of our method on the scene, building, and human synthesis tasks across three different datasets.
->
+<image src="https://github.com/FraLuca/STSGCN/blob/main/pipeline-cameraready-1.png" width="600">
+</div>
+
+<div align="center"> <h3> Abstract </h3>  </div>
+<div align="justify">
+A powerful simulator highly decreases the need for real-world tests when training and evaluating autonomous vehicles.
+Data-driven simulators flourished with the recent advancement of conditional Generative Adversarial Networks (cGANs), providing high-fidelity images.
+The main challenge is synthesizing photo-realistic images while following given constraints.
+In this work, we propose to improve the quality of generated images by rethinking the discriminator architecture.
+The focus is on the class of problems where images are generated given semantic inputs, such as scene segmentation maps or human body poses.
+We build on successful cGAN models to propose a new semantically-aware discriminator that better guides the generator.
+We aim to learn a shared latent representation that encodes enough information to jointly do semantic segmentation, content reconstruction, along with a coarse-to-fine grained adversarial reasoning.
+The achieved improvements are generic and simple enough to be applied to any architecture of conditional image synthesis.
+We demonstrate the strength of our method on the scene, building, and human synthesis tasks across three different datasets.
+  
+</div>
+--------
+
+
+
+
+# 
+
+The official code for the paper: "A Shared Representation for Photorealistic Driving Simulators", IEEE Transactions on Intelligent Transportation Systems, 2021
+
 
 ## Example
 
